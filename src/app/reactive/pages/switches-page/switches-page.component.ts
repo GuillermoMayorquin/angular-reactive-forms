@@ -1,14 +1,54 @@
 import { CommonModule } from '@angular/common';
-import { Component } from '@angular/core';
+import { Component, OnInit } from '@angular/core';
+import { FormBuilder, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
 
 @Component({
   standalone: true,
   imports: [
-    CommonModule
+    CommonModule,
+    ReactiveFormsModule
   ],
   templateUrl: './switches-page.component.html',
   styles: ``
 })
-export class SwitchesPageComponent {
+export class SwitchesPageComponent implements OnInit {
 
+  public myForm: FormGroup = this.fb.group({
+    gender:['M',[Validators.required]],
+    wantNotifications: [true, [Validators.required]],
+    termsAndConditions: [false, [Validators.requiredTrue]],
+  })
+
+  public person = {
+    gender: 'F',
+    wantNotifications:false,
+
+  }
+
+  ngOnInit(): void {
+    this.myForm.reset(this.person)
+  }
+
+  isNotValidField(field: string): boolean | null{
+    return this.myForm.controls[field].errors
+      && this.myForm.controls[field].touched;
+  }
+
+
+  onSave(){
+    if (this.myForm.invalid){
+      this.myForm.markAllAsTouched();
+      return;
+    }
+
+    const {termsAndConditions, ...newPerson} = this.myForm.value;
+    this.person = newPerson;
+    this.person = this.myForm.value;
+    console.log(this.myForm.value);
+    console.log(this.person);
+  }
+
+  constructor(private fb: FormBuilder){}
 }
+
+
